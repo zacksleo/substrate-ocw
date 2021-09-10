@@ -53,7 +53,7 @@ pub mod pallet {
 	// We are fetching information from the github public API about organization`substrate-developer-hub`.
 	const HTTP_GITHUB_API: &str = "https://api.github.com/orgs/substrate-developer-hub";
 	// polkadot price query api
-	const HTTP_POLKADOT_PRICE_API: &str = "https://api.coincap.io/v2/assets/polkadot";
+	const HTTP_POLKADOT_PRICE_API: &str = "https://api3.binance.com/api/v3/avgPrice?symbol=DOTUSDT";
 	const HTTP_HEADER_USER_AGENT: &str = "jimmychu0807";
 
 	const FETCH_TIMEOUT_PERIOD: u64 = 3000; // in milli-seconds
@@ -95,7 +95,19 @@ pub mod pallet {
 		public: Public,
 	}
 
+	#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
+	pub struct PayloadPrice<Public> {
+		price: PolkadotPrice,
+		public: Public,
+	}
+
 	impl<T: SigningTypes> SignedPayload<T> for Payload<T::Public> {
+		fn public(&self) -> T::Public {
+			self.public.clone()
+		}
+	}
+
+	impl<T: SigningTypes> SignedPayload<T> for PayloadPrice<T::Public> {
 		fn public(&self) -> T::Public {
 			self.public.clone()
 		}
@@ -112,11 +124,6 @@ pub mod pallet {
 		public_repos: u32,
 	}
 
-	#[derive(Deserialize, Encode, Decode, Default, Debug)]
-	struct DataWrapper<T> {
-		data: T,
-	}
-
 	// polkadot price
 	pub type PolkadotPrice = (u64, Permill);
 
@@ -125,7 +132,7 @@ pub mod pallet {
 	#[serde(rename_all = "camelCase")]
 	struct PriceInfo {
 		#[serde(deserialize_with = "de_string_to_tuple")]
-		price_usd: PolkadotPrice,
+		price: PolkadotPrice,
 	}
 
 	#[derive(Debug, Deserialize, Encode, Decode, Default)]
@@ -194,6 +201,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		NewNumber(Option<T::AccountId>, u64),
+		NewPrice(Option<T::AccountId>, PolkadotPrice),
 	}
 
 	// Errors inform users that something went wrong.
@@ -282,6 +290,12 @@ pub mod pallet {
 					}
 					valid_tx(b"submit_number_unsigned_with_signed_payload".to_vec())
 				},
+				Call::submit_price_unsigned_with_signed_payload(ref payload, ref signature) => {
+					if !SignedPayload::<T>::verify::<T::AuthorityId>(payload, signature.clone()) {
+						return InvalidTransaction::BadProof.into();
+					}
+					valid_tx(b"submit_number_unsigned_with_signed_payload".to_vec())
+				},
 				_ => InvalidTransaction::Call.into(),
 			}
 		}
@@ -323,6 +337,21 @@ pub mod pallet {
 			Self::deposit_event(Event::NewNumber(None, number));
 			Ok(())
 		}
+
+		#[pallet::weight(10000)]
+		pub fn submit_price_unsigned_with_signed_payload(origin: OriginFor<T>, payload: PayloadPrice<T::Public>,
+			_signature: T::Signature) -> DispatchResult
+		{
+			let _ = ensure_none(origin)?;
+			// we don't need to verify the signature here because it has been verified in
+			//   `validate_unsigned` function when sending out the unsigned tx.
+			let PayloadPrice { price, public } = payload;
+			log::info!("submit_number_unsigned_with_signed_payload: ({:#?}, {:#?})", price, public);
+			Self::append_or_replace_price(price);
+
+			Self::deposit_event(Event::NewPrice(None, price));
+			Ok(())
+		}
 	}
 
 	impl<T: Config> Pallet<T> {
@@ -338,34 +367,31 @@ pub mod pallet {
 			});
 		}
 
+		/// Append a new number to the tail of the list, removing an element from the head if reaching
+		///   the bounded length.
+		fn append_or_replace_price(number: PolkadotPrice) {
+			Prices::<T>::mutate(|numbers| {
+				if numbers.len() == NUM_VEC_LEN {
+					let _ = numbers.pop_front();
+				}
+				numbers.push_back(number);
+				log::info!("Number vector: {:?}", numbers);
+			});
+		}
+
+
+		// TODO: 这是你们的功课
+
+		// 利用 offchain worker 取出 DOT 当前对 USD 的价格，并把写到一个 Vec 的存储里，
+		// 你们自己选一种方法提交回链上，并在代码注释为什么用这种方法提交回链上最好。只保留当前最近的 10 个价格，
+		// 其他价格可丢弃 （就是 Vec 的长度长到 10 后，这时再插入一个值时，要先丢弃最早的那个值）。
+
+		// 取得的价格 parse 完后，放在以下存儲：
+		// pub type Prices<T> = StorageValue<_, VecDeque<(u64, Permill)>, ValueQuery>
+
+		// 这个 http 请求可得到当前 DOT 价格：
+		// [https://api.coincap.io/v2/assets/polkadot](https://api.coincap.io/v2/assets/polkadot)。
 		fn fetch_price_info() -> Result<(), Error<T>> {
-			// TODO: 这是你们的功课
-
-			// 利用 offchain worker 取出 DOT 当前对 USD 的价格，并把写到一个 Vec 的存储里，
-			// 你们自己选一种方法提交回链上，并在代码注释为什么用这种方法提交回链上最好。只保留当前最近的 10 个价格，
-			// 其他价格可丢弃 （就是 Vec 的长度长到 10 后，这时再插入一个值时，要先丢弃最早的那个值）。
-
-			// 取得的价格 parse 完后，放在以下存儲：
-			// pub type Prices<T> = StorageValue<_, VecDeque<(u64, Permill)>, ValueQuery>
-
-			// 这个 http 请求可得到当前 DOT 价格：
-			// [https://api.coincap.io/v2/assets/polkadot](https://api.coincap.io/v2/assets/polkadot)。
-
-			let s_info = StorageValueRef::persistent(b"offchain-demo::dot-price");
-
-			// Local storage is persisted and shared between runs of the offchain workers,
-			// offchain workers may run concurrently. We can use the `mutate` function to
-			// write a storage entry in an atomic fashion.
-			//
-			// With a similar API as `StorageValue` with the variables `get`, `set`, `mutate`.
-			// We will likely want to use `mutate` to access
-			// the storage comprehensively.
-			//
-			if let Ok(Some(wrapper)) = s_info.get::<DataWrapper<PriceInfo>>() {
-				// price has already been fetched. Return early.
-				log::info!("cached price: {:#?}", &wrapper.data.price_usd);
-				return Ok(());
-			}
 
 			// Since off-chain storage can be accessed by off-chain workers from multiple runs, it is important to lock
 			//   it before doing heavy computations or write operations.
@@ -384,9 +410,10 @@ pub mod pallet {
 			// We try to acquire the lock here. If failed, we know the `fetch_n_parse` part inside is being
 			//   executed by previous run of ocw, so the function just returns.
 			if let Ok(_guard) = lock.try_lock() {
-				match Self::fetch_n_parse::<DataWrapper<PriceInfo>>(HTTP_POLKADOT_PRICE_API) {
-					Ok(wrapper) => {
-						s_info.set(&wrapper.data.price_usd);
+				match Self::fetch_n_parse::<PriceInfo>(HTTP_POLKADOT_PRICE_API) {
+					Ok(info) => {
+						// 需要知道该交易来源是谁，但不需要该用户付手续费, 故使用不签名但具签名信息的交易
+						let _ = Self::offchain_unsigned_tx_signed_payload_price(info.price);
 					}
 					Err(err) => {
 						return Err(err);
@@ -563,6 +590,30 @@ pub mod pallet {
 			if let Some((_, res)) = signer.send_unsigned_transaction(
 				|acct| Payload { number, public: acct.public.clone() },
 				Call::submit_number_unsigned_with_signed_payload
+				) {
+				return res.map_err(|_| {
+					log::error!("Failed in offchain_unsigned_tx_signed_payload");
+					<Error<T>>::OffchainUnsignedTxSignedPayloadError
+				});
+			}
+
+			// The case of `None`: no account is available for sending
+			log::error!("No local account available");
+			Err(<Error<T>>::NoLocalAcctForSigning)
+		}
+
+		fn offchain_unsigned_tx_signed_payload_price(price: PolkadotPrice) -> Result<(), Error<T>> {
+			// Retrieve the signer to sign the payload
+			let signer = Signer::<T, T::AuthorityId>::any_account();
+
+			// `send_unsigned_transaction` is returning a type of `Option<(Account<T>, Result<(), ()>)>`.
+			//   Similar to `send_signed_transaction`, they account for:
+			//   - `None`: no account is available for sending transaction
+			//   - `Some((account, Ok(())))`: transaction is successfully sent
+			//   - `Some((account, Err(())))`: error occured when sending the transaction
+			if let Some((_, res)) = signer.send_unsigned_transaction(
+				|acct| PayloadPrice { price, public: acct.public.clone() },
+				Call::submit_price_unsigned_with_signed_payload
 				) {
 				return res.map_err(|_| {
 					log::error!("Failed in offchain_unsigned_tx_signed_payload");
