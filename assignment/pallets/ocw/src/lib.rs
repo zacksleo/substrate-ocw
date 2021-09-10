@@ -2,6 +2,9 @@
 
 pub use pallet::*;
 
+#[cfg(test)]
+mod tests;
+
 #[frame_support::pallet]
 pub mod pallet {
 	//! A demonstration of an offchain worker that sends onchain callbacks
@@ -33,7 +36,7 @@ pub mod pallet {
 	};
 	use sp_std::{collections::vec_deque::VecDeque, prelude::*, str};
 
-	use serde::{Deserialize, Deserializer};
+	use serde::{de::DeserializeOwned, Deserialize, Deserializer};
 
 	/// Defines application identifier for crypto keys of this module.
 	///
@@ -48,7 +51,9 @@ pub mod pallet {
 	const UNSIGNED_TXS_PRIORITY: u64 = 100;
 
 	// We are fetching information from the github public API about organization`substrate-developer-hub`.
-	const HTTP_REMOTE_REQUEST: &str = "https://api.github.com/orgs/substrate-developer-hub";
+	const HTTP_GITHUB_API: &str = "https://api.github.com/orgs/substrate-developer-hub";
+	// polkadot price query api
+	const HTTP_POLKADOT_PRICE_API: &str = "https://api.coincap.io/v2/assets/polkadot";
 	const HTTP_HEADER_USER_AGENT: &str = "jimmychu0807";
 
 	const FETCH_TIMEOUT_PERIOD: u64 = 3000; // in milli-seconds
@@ -107,6 +112,22 @@ pub mod pallet {
 		public_repos: u32,
 	}
 
+	#[derive(Deserialize, Encode, Decode, Default, Debug)]
+	struct DataWrapper<T> {
+		data: T,
+	}
+
+	// polkadot price
+	pub type PolkadotPrice = (u64, Permill);
+
+	// polkadot price data
+	#[derive(Deserialize, Encode, Decode, Default, Debug)]
+	#[serde(rename_all = "camelCase")]
+	struct PriceInfo {
+		#[serde(deserialize_with = "de_string_to_tuple")]
+		price_usd: PolkadotPrice,
+	}
+
 	#[derive(Debug, Deserialize, Encode, Decode, Default)]
 	struct IndexingData(Vec<u8>, u64);
 
@@ -116,6 +137,17 @@ pub mod pallet {
 	{
 		let s: &str = Deserialize::deserialize(de)?;
 		Ok(s.as_bytes().to_vec())
+	}
+
+	pub fn de_string_to_tuple<'de, D>(de: D) -> Result<PolkadotPrice, D::Error>
+	where
+		D: Deserializer<'de>,
+	{
+		let s: &str = Deserialize::deserialize(de)?;
+		let price_usd: Vec<&str> = s.split(".").collect();
+		let price_usd_num: u64 = price_usd[0].parse().unwrap();
+		let price_usd_permill: Permill = Permill::from_parts(price_usd[1][..6].parse::<u32>().unwrap());
+		Ok((price_usd_num, price_usd_permill))
 	}
 
 	impl fmt::Debug for GithubInfo {
@@ -128,7 +160,7 @@ pub mod pallet {
 				str::from_utf8(&self.login).map_err(|_| fmt::Error)?,
 				str::from_utf8(&self.blog).map_err(|_| fmt::Error)?,
 				&self.public_repos
-				)
+			)
 		}
 	}
 
@@ -182,6 +214,9 @@ pub mod pallet {
 
 		// Error returned when fetching github info
 		HttpFetchingError,
+
+		// Decode Failed
+		DecodeFailed,
 	}
 
 	#[pallet::hooks]
@@ -316,9 +351,51 @@ pub mod pallet {
 			// 这个 http 请求可得到当前 DOT 价格：
 			// [https://api.coincap.io/v2/assets/polkadot](https://api.coincap.io/v2/assets/polkadot)。
 
+			let s_info = StorageValueRef::persistent(b"offchain-demo::dot-price");
+
+			// Local storage is persisted and shared between runs of the offchain workers,
+			// offchain workers may run concurrently. We can use the `mutate` function to
+			// write a storage entry in an atomic fashion.
+			//
+			// With a similar API as `StorageValue` with the variables `get`, `set`, `mutate`.
+			// We will likely want to use `mutate` to access
+			// the storage comprehensively.
+			//
+			if let Ok(Some(wrapper)) = s_info.get::<DataWrapper<PriceInfo>>() {
+				// price has already been fetched. Return early.
+				log::info!("cached price: {:#?}", &wrapper.data.price_usd);
+				return Ok(());
+			}
+
+			// Since off-chain storage can be accessed by off-chain workers from multiple runs, it is important to lock
+			//   it before doing heavy computations or write operations.
+			//
+			// There are four ways of defining a lock:
+			//   1) `new` - lock with default time and block exipration
+			//   2) `with_deadline` - lock with default block but custom time expiration
+			//   3) `with_block_deadline` - lock with default time but custom block expiration
+			//   4) `with_block_and_time_deadline` - lock with custom time and block expiration
+			// Here we choose the most custom one for demonstration purpose.
+			let mut lock = StorageLock::<BlockAndTime<Self>>::with_block_and_time_deadline(
+				b"offchain-demo-price::lock", LOCK_BLOCK_EXPIRATION,
+				rt_offchain::Duration::from_millis(LOCK_TIMEOUT_EXPIRATION),
+			);
+
+			// We try to acquire the lock here. If failed, we know the `fetch_n_parse` part inside is being
+			//   executed by previous run of ocw, so the function just returns.
+			if let Ok(_guard) = lock.try_lock() {
+				match Self::fetch_n_parse::<DataWrapper<PriceInfo>>(HTTP_POLKADOT_PRICE_API) {
+					Ok(wrapper) => {
+						s_info.set(&wrapper.data.price_usd);
+					}
+					Err(err) => {
+						return Err(err);
+					}
+				}
+			}
+
 			Ok(())
 		}
-
 
 		/// Check if we have fetched github info before. If yes, we can use the cached version
 		///   stored in off-chain worker storage `storage`. If not, we fetch the remote info and
@@ -360,7 +437,7 @@ pub mod pallet {
 			// We try to acquire the lock here. If failed, we know the `fetch_n_parse` part inside is being
 			//   executed by previous run of ocw, so the function just returns.
 			if let Ok(_guard) = lock.try_lock() {
-				match Self::fetch_n_parse() {
+				match Self::fetch_n_parse::<GithubInfo>(HTTP_GITHUB_API) {
 					Ok(gh_info) => { s_info.set(&gh_info); }
 					Err(err) => { return Err(err); }
 				}
@@ -369,38 +446,41 @@ pub mod pallet {
 		}
 
 		/// Fetch from remote and deserialize the JSON to a struct
-		fn fetch_n_parse() -> Result<GithubInfo, Error<T>> {
-			let resp_bytes = Self::fetch_from_remote().map_err(|e| {
+		fn fetch_n_parse<U>(url: &str) -> Result<U, Error<T>>
+		where
+			U: DeserializeOwned,
+		{
+			let resp_bytes = Self::fetch_from_remote(url).map_err(|e| {
 				log::error!("fetch_from_remote error: {:?}", e);
 				<Error<T>>::HttpFetchingError
 			})?;
 
-			let resp_str = str::from_utf8(&resp_bytes).map_err(|_| <Error<T>>::HttpFetchingError)?;
+			let resp_str =
+				str::from_utf8(&resp_bytes).map_err(|_| <Error<T>>::HttpFetchingError)?;
 			// Print out our fetched JSON string
-			log::info!("{}", resp_str);
+			log::info!("response: {}", resp_str);
 
 			// Deserializing JSON to struct, thanks to `serde` and `serde_derive`
-			let gh_info: GithubInfo =
-			serde_json::from_str(&resp_str).map_err(|_| <Error<T>>::HttpFetchingError)?;
-			Ok(gh_info)
+			let info: U = serde_json::from_str(resp_str).map_err(|_| <Error<T>>::DecodeFailed)?;
+			Ok(info)
 		}
 
 		/// This function uses the `offchain::http` API to query the remote github information,
 		///   and returns the JSON response as vector of bytes.
-		fn fetch_from_remote() -> Result<Vec<u8>, Error<T>> {
-			log::info!("sending request to: {}", HTTP_REMOTE_REQUEST);
+		fn fetch_from_remote(url: &str) -> Result<Vec<u8>, Error<T>> {
+			log::info!("sending request to: {}", url);
 
 			// Initiate an external HTTP GET request. This is using high-level wrappers from `sp_runtime`.
-			let request = rt_offchain::http::Request::get(HTTP_REMOTE_REQUEST);
+			let request = rt_offchain::http::Request::get(url);
 
 			// Keeping the offchain worker execution time reasonable, so limiting the call to be within 3s.
 			let timeout = sp_io::offchain::timestamp()
-			.add(rt_offchain::Duration::from_millis(FETCH_TIMEOUT_PERIOD));
+				.add(rt_offchain::Duration::from_millis(FETCH_TIMEOUT_PERIOD));
 
 			// For github API request, we also need to specify `user-agent` in http request header.
 			//   See: https://developer.github.com/v3/#user-agent-required
 			let pending = request
-			.add_header("User-Agent", HTTP_HEADER_USER_AGENT)
+				.add_header("User-Agent", HTTP_HEADER_USER_AGENT)
 				.deadline(timeout) // Setting the timeout time
 				.send() // Sending the request out by the host
 				.map_err(|_| <Error<T>>::HttpFetchingError)?;
