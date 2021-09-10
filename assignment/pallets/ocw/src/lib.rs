@@ -351,7 +351,7 @@ pub mod pallet {
 			// we don't need to verify the signature here because it has been verified in
 			//   `validate_unsigned` function when sending out the unsigned tx.
 			let PayloadPrice { price, public } = payload;
-			log::info!("submit_number_unsigned_with_signed_payload: ({:#?}, {:#?})", price, public);
+			log::info!("submit_price_unsigned_with_signed_payload: ({:#?}, {:#?})", price, public);
 			Self::append_or_replace_price(price);
 
 			Self::deposit_event(Event::NewPrice(None, price));
