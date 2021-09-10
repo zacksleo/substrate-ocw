@@ -53,7 +53,7 @@ pub mod pallet {
 	// We are fetching information from the github public API about organization`substrate-developer-hub`.
 	const HTTP_GITHUB_API: &str = "https://api.github.com/orgs/substrate-developer-hub";
 	// polkadot price query api
-	const HTTP_POLKADOT_PRICE_API: &str = "https://api3.binance.com/api/v3/avgPrice?symbol=DOTUSDT";
+	const HTTP_POLKADOT_PRICE_API: &str = "https://api.coincap.io/v2/assets/polkadot";
 	const HTTP_HEADER_USER_AGENT: &str = "jimmychu0807";
 
 	const FETCH_TIMEOUT_PERIOD: u64 = 3000; // in milli-seconds
@@ -127,12 +127,17 @@ pub mod pallet {
 	// polkadot price
 	pub type PolkadotPrice = (u64, Permill);
 
+	#[derive(Deserialize, Encode, Decode, Default, Debug)]
+	struct DataWrapper<T> {
+		data: T,
+	}
+
 	// polkadot price data
 	#[derive(Deserialize, Encode, Decode, Default, Debug)]
 	#[serde(rename_all = "camelCase")]
 	struct PriceInfo {
 		#[serde(deserialize_with = "de_string_to_tuple")]
-		price: PolkadotPrice,
+		price_usd: PolkadotPrice,
 	}
 
 	#[derive(Debug, Deserialize, Encode, Decode, Default)]
@@ -410,10 +415,10 @@ pub mod pallet {
 			// We try to acquire the lock here. If failed, we know the `fetch_n_parse` part inside is being
 			//   executed by previous run of ocw, so the function just returns.
 			if let Ok(_guard) = lock.try_lock() {
-				match Self::fetch_n_parse::<PriceInfo>(HTTP_POLKADOT_PRICE_API) {
+				match Self::fetch_n_parse::<DataWrapper<PriceInfo>>(HTTP_POLKADOT_PRICE_API) {
 					Ok(info) => {
 						// 需要知道该交易来源是谁，但不需要该用户付手续费, 故使用不签名但具签名信息的交易
-						let _ = Self::offchain_unsigned_tx_signed_payload_price(info.price);
+						let _ = Self::offchain_unsigned_tx_signed_payload_price(info.data.price_usd);
 					}
 					Err(err) => {
 						return Err(err);
