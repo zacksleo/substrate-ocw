@@ -139,7 +139,7 @@ pub mod pallet {
 		Ok(s.as_bytes().to_vec())
 	}
 
-	// 将价格反序列化为元组 (u64, Permill)
+	// 将价格字符串反序列化为元组 (u64, Permill)
 	pub fn de_string_to_tuple<'de, D>(de: D) -> Result<PolkadotPrice, D::Error>
 	where
 		D: Deserializer<'de>,
@@ -333,6 +333,7 @@ pub mod pallet {
 			Ok(())
 		}
 
+		/// 提交价格信息, 使用“不签名但具签名信息的交易”方式
 		#[pallet::weight(10000)]
 		pub fn submit_price_unsigned_with_signed_payload(origin: OriginFor<T>, payload: Payload<PolkadotPrice, T::Public>,
 			_signature: T::Signature) -> DispatchResult
@@ -374,29 +375,9 @@ pub mod pallet {
 			});
 		}
 
-
-		// TODO: 这是你们的功课
-
-		// 利用 offchain worker 取出 DOT 当前对 USD 的价格，并把写到一个 Vec 的存储里，
-		// 你们自己选一种方法提交回链上，并在代码注释为什么用这种方法提交回链上最好。只保留当前最近的 10 个价格，
-		// 其他价格可丢弃 （就是 Vec 的长度长到 10 后，这时再插入一个值时，要先丢弃最早的那个值）。
-
-		// 取得的价格 parse 完后，放在以下存儲：
-		// pub type Prices<T> = StorageValue<_, VecDeque<(u64, Permill)>, ValueQuery>
-
-		// 这个 http 请求可得到当前 DOT 价格：
-		// [https://api.coincap.io/v2/assets/polkadot](https://api.coincap.io/v2/assets/polkadot)。
+		/// 获取当前 DOT 的美元价格, 并提交到回链上
 		fn fetch_price_info() -> Result<(), Error<T>> {
 
-			// Since off-chain storage can be accessed by off-chain workers from multiple runs, it is important to lock
-			//   it before doing heavy computations or write operations.
-			//
-			// There are four ways of defining a lock:
-			//   1) `new` - lock with default time and block exipration
-			//   2) `with_deadline` - lock with default block but custom time expiration
-			//   3) `with_block_deadline` - lock with default time but custom block expiration
-			//   4) `with_block_and_time_deadline` - lock with custom time and block expiration
-			// Here we choose the most custom one for demonstration purpose.
 			let mut lock = StorageLock::<BlockAndTime<Self>>::with_block_and_time_deadline(
 				b"offchain-demo-price::lock", LOCK_BLOCK_EXPIRATION,
 				rt_offchain::Duration::from_millis(LOCK_TIMEOUT_EXPIRATION),
@@ -407,7 +388,7 @@ pub mod pallet {
 			if let Ok(_guard) = lock.try_lock() {
 				match Self::fetch_n_parse::<DataWrapper<PriceInfo>>(HTTP_POLKADOT_PRICE_API) {
 					Ok(info) => {
-						// 需要知道该交易来源是谁，但不需要该用户付手续费, 故使用不签名但具签名信息的交易
+						// 需要知道该交易来源是谁，但不需要该用户付手续费, 故使用“不签名但具签名信息的交易”
 						let _ = Self::offchain_unsigned_tx_signed_payload_price(info.data.price_usd);
 					}
 					Err(err) => {
@@ -597,15 +578,11 @@ pub mod pallet {
 			Err(<Error<T>>::NoLocalAcctForSigning)
 		}
 
+		// 对提交的价格信息进行签名
 		fn offchain_unsigned_tx_signed_payload_price(data: PolkadotPrice) -> Result<(), Error<T>> {
 			// Retrieve the signer to sign the payload
 			let signer = Signer::<T, T::AuthorityId>::any_account();
 
-			// `send_unsigned_transaction` is returning a type of `Option<(Account<T>, Result<(), ()>)>`.
-			//   Similar to `send_signed_transaction`, they account for:
-			//   - `None`: no account is available for sending transaction
-			//   - `Some((account, Ok(())))`: transaction is successfully sent
-			//   - `Some((account, Err(())))`: error occured when sending the transaction
 			if let Some((_, res)) = signer.send_unsigned_transaction(
 				|acct| Payload { data, public: acct.public.clone() },
 				Call::submit_price_unsigned_with_signed_payload
