@@ -9,7 +9,7 @@ mod tests;
 pub mod pallet {
 	//! A demonstration of an offchain worker that sends onchain callbacks
 	use core::{convert::TryInto, fmt};
-	use parity_scale_codec::{Decode, Encode};
+	use parity_scale_codec::{Decode, Encode, FullCodec};
 	use frame_support::pallet_prelude::*;
 	use frame_system::{
 		pallet_prelude::*,
@@ -90,24 +90,12 @@ pub mod pallet {
 	}
 
 	#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
-	pub struct Payload<Public> {
-		number: u64,
+	pub struct Payload<P, Public> {
+		data: P,
 		public: Public,
 	}
 
-	#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
-	pub struct PayloadPrice<Public> {
-		price: PolkadotPrice,
-		public: Public,
-	}
-
-	impl<T: SigningTypes> SignedPayload<T> for Payload<T::Public> {
-		fn public(&self) -> T::Public {
-			self.public.clone()
-		}
-	}
-
-	impl<T: SigningTypes> SignedPayload<T> for PayloadPrice<T::Public> {
+	impl<P: FullCodec, T: SigningTypes> SignedPayload<T> for Payload<P, T::Public> {
 		fn public(&self) -> T::Public {
 			self.public.clone()
 		}
@@ -151,6 +139,7 @@ pub mod pallet {
 		Ok(s.as_bytes().to_vec())
 	}
 
+	// 将价格反序列化为元组 (u64, Permill)
 	pub fn de_string_to_tuple<'de, D>(de: D) -> Result<PolkadotPrice, D::Error>
 	where
 		D: Deserializer<'de>,
@@ -206,6 +195,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		NewNumber(Option<T::AccountId>, u64),
+		// 价格添加成功 [option<account>, (u64, Permill]
 		NewPrice(Option<T::AccountId>, PolkadotPrice),
 	}
 
@@ -329,32 +319,32 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(10000)]
-		pub fn submit_number_unsigned_with_signed_payload(origin: OriginFor<T>, payload: Payload<T::Public>,
+		pub fn submit_number_unsigned_with_signed_payload(origin: OriginFor<T>, payload: Payload<u64, T::Public>,
 			_signature: T::Signature) -> DispatchResult
 		{
 			let _ = ensure_none(origin)?;
 			// we don't need to verify the signature here because it has been verified in
 			//   `validate_unsigned` function when sending out the unsigned tx.
-			let Payload { number, public } = payload;
-			log::info!("submit_number_unsigned_with_signed_payload: ({}, {:?})", number, public);
-			Self::append_or_replace_number(number);
+			let Payload{ data, public } = payload;
+			log::info!("submit_number_unsigned_with_signed_payload: ({}, {:?})", data, public);
+			Self::append_or_replace_number(data);
 
-			Self::deposit_event(Event::NewNumber(None, number));
+			Self::deposit_event(Event::NewNumber(None, data));
 			Ok(())
 		}
 
 		#[pallet::weight(10000)]
-		pub fn submit_price_unsigned_with_signed_payload(origin: OriginFor<T>, payload: PayloadPrice<T::Public>,
+		pub fn submit_price_unsigned_with_signed_payload(origin: OriginFor<T>, payload: Payload<PolkadotPrice, T::Public>,
 			_signature: T::Signature) -> DispatchResult
 		{
 			let _ = ensure_none(origin)?;
 			// we don't need to verify the signature here because it has been verified in
 			//   `validate_unsigned` function when sending out the unsigned tx.
-			let PayloadPrice { price, public } = payload;
-			log::info!("submit_price_unsigned_with_signed_payload: ({:#?}, {:#?})", price, public);
-			Self::append_or_replace_price(price);
+			let Payload { data, public } = payload;
+			log::info!("submit_price_unsigned_with_signed_payload: ({:#?}, {:#?})", data, public);
+			Self::append_or_replace_price(data);
 
-			Self::deposit_event(Event::NewPrice(None, price));
+			Self::deposit_event(Event::NewPrice(None, data));
 			Ok(())
 		}
 	}
@@ -585,7 +575,7 @@ pub mod pallet {
 			// Retrieve the signer to sign the payload
 			let signer = Signer::<T, T::AuthorityId>::any_account();
 
-			let number: u64 = block_number.try_into().unwrap_or(0);
+			let data: u64 = block_number.try_into().unwrap_or(0);
 
 			// `send_unsigned_transaction` is returning a type of `Option<(Account<T>, Result<(), ()>)>`.
 			//   Similar to `send_signed_transaction`, they account for:
@@ -593,7 +583,7 @@ pub mod pallet {
 			//   - `Some((account, Ok(())))`: transaction is successfully sent
 			//   - `Some((account, Err(())))`: error occured when sending the transaction
 			if let Some((_, res)) = signer.send_unsigned_transaction(
-				|acct| Payload { number, public: acct.public.clone() },
+				|acct| Payload { data, public: acct.public.clone() },
 				Call::submit_number_unsigned_with_signed_payload
 				) {
 				return res.map_err(|_| {
@@ -607,7 +597,7 @@ pub mod pallet {
 			Err(<Error<T>>::NoLocalAcctForSigning)
 		}
 
-		fn offchain_unsigned_tx_signed_payload_price(price: PolkadotPrice) -> Result<(), Error<T>> {
+		fn offchain_unsigned_tx_signed_payload_price(data: PolkadotPrice) -> Result<(), Error<T>> {
 			// Retrieve the signer to sign the payload
 			let signer = Signer::<T, T::AuthorityId>::any_account();
 
@@ -617,7 +607,7 @@ pub mod pallet {
 			//   - `Some((account, Ok(())))`: transaction is successfully sent
 			//   - `Some((account, Err(())))`: error occured when sending the transaction
 			if let Some((_, res)) = signer.send_unsigned_transaction(
-				|acct| PayloadPrice { price, public: acct.public.clone() },
+				|acct| Payload { data, public: acct.public.clone() },
 				Call::submit_price_unsigned_with_signed_payload
 				) {
 				return res.map_err(|_| {
