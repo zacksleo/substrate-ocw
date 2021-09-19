@@ -72,6 +72,709 @@ https://github.com/zacksleo/substrate-ocw/blob/master/assignment/pallets/ocw/src
 
 如将请求方法, 统一封装为 `	fn fetch_from_remote(url: &str) -> Result<Vec<u8>, Error<T>> `,  通过 url 就可以获取数据
 
+
+### 编译日志
+
+```bash
+➜  assignment git:(master) cargo build --release
+warning: unused config key `build.rustc_wrapper` in `/Users/zacksleo/.cargo/config`
+   Compiling libc v0.2.98
+   Compiling proc-macro2 v1.0.28
+   Compiling unicode-xid v0.2.2
+   Compiling syn v1.0.74
+   Compiling version_check v0.9.3
+   Compiling cfg-if v1.0.0
+   Compiling autocfg v1.0.1
+   Compiling serde v1.0.130
+   Compiling serde_derive v1.0.130
+   Compiling log v0.4.14
+   Compiling scopeguard v1.1.0
+   Compiling memchr v2.4.0
+   Compiling smallvec v1.6.1
+   Compiling lazy_static v1.4.0
+   Compiling typenum v1.13.0
+   Compiling futures v0.1.31
+   Compiling slab v0.4.3
+   Compiling byteorder v1.4.3
+   Compiling cfg-if v0.1.10
+   Compiling ppv-lite86 v0.2.10
+   Compiling futures-core v0.3.16
+   Compiling pin-project-lite v0.2.7
+   Compiling futures-io v0.3.16
+   Compiling anyhow v1.0.42
+   Compiling proc-macro-hack v0.5.19
+   Compiling futures-sink v0.3.16
+   Compiling futures-task v0.3.16
+   Compiling proc-macro-nested v0.1.7
+   Compiling futures-channel v0.3.16
+   Compiling pin-utils v0.1.0
+   Compiling getrandom v0.1.16
+   Compiling subtle v2.4.1
+   Compiling either v1.6.1
+   Compiling opaque-debug v0.3.0
+   Compiling tinyvec_macros v0.1.0
+   Compiling static_assertions v1.1.0
+   Compiling block-padding v0.2.1
+   Compiling crunchy v0.2.2
+   Compiling cpufeatures v0.1.5
+   Compiling arrayref v0.3.6
+   Compiling byte-tools v0.3.1
+   Compiling arrayvec v0.5.2
+   Compiling constant_time_eq v0.1.5
+   Compiling keccak v0.1.0
+   Compiling opaque-debug v0.2.3
+   Compiling fake-simd v0.1.2
+   Compiling subtle v1.0.0
+   Compiling itoa v0.4.7
+   Compiling radium v0.6.2
+   Compiling ryu v1.0.5
+   Compiling signature v1.3.1
+   Compiling regex-syntax v0.6.25
+   Compiling libm v0.2.1
+   Compiling serde_json v1.0.67
+   Compiling wyz v0.2.0
+   Compiling tap v1.0.1
+   Compiling funty v1.1.0
+   Compiling arrayvec v0.7.1
+   Compiling byte-slice-cast v1.0.0
+   Compiling rustc-hash v1.1.0
+   Compiling hex v0.4.3
+   Compiling rustc-hex v2.1.0
+   Compiling adler v1.0.2
+   Compiling arrayvec v0.4.12
+   Compiling parity-util-mem v0.10.0
+   Compiling fnv v1.0.7
+   Compiling sp-std v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling zstd-safe v3.0.1+zstd.1.4.9
+   Compiling parity-wasm v0.42.2
+   Compiling erased-serde v0.3.16
+   Compiling ref-cast v1.0.6
+   Compiling slog v2.7.0
+   Compiling downcast-rs v1.2.0
+   Compiling ansi_term v0.12.1
+   Compiling hash-db v0.15.2
+   Compiling nodrop v0.1.14
+   Compiling memory_units v0.3.0
+   Compiling environmental v1.1.3
+   Compiling gimli v0.25.0
+   Compiling tiny-keccak v2.0.2
+   Compiling dyn-clone v1.0.4
+   Compiling async-trait v0.1.51
+   Compiling rustc-demangle v0.1.20
+   Compiling base58 v0.1.0
+   Compiling convert_case v0.4.0
+   Compiling paste v1.0.5
+   Compiling bytes v1.0.1
+   Compiling unicode-segmentation v1.8.0
+   Compiling remove_dir_all v0.5.3
+   Compiling bitflags v1.2.1
+   Compiling futures-timer v3.0.2
+   Compiling fixedbitset v0.2.0
+   Compiling multimap v0.8.3
+   Compiling matches v0.1.8
+   Compiling crossbeam-utils v0.8.5
+   Compiling semver-parser v0.7.0
+   Compiling cache-padded v1.1.1
+   Compiling untrusted v0.7.1
+   Compiling spin v0.5.2
+   Compiling parking v2.0.0
+   Compiling fastrand v1.5.0
+   Compiling waker-fn v1.1.0
+   Compiling percent-encoding v2.1.0
+   Compiling event-listener v2.5.1
+   Compiling httparse v1.4.1
+   Compiling bytes v0.5.6
+   Compiling data-encoding v2.3.2
+   Compiling pin-project-lite v0.1.12
+   Compiling async-task v4.0.3
+   Compiling signal-hook v0.3.9
+   Compiling pin-project-internal v0.4.28
+   Compiling atomic-waker v1.0.0
+   Compiling unsigned-varint v0.5.1
+   Compiling stable_deref_trait v1.2.0
+   Compiling try-lock v0.2.3
+   Compiling crc32fast v1.2.1
+   Compiling bs58 v0.4.0
+   Compiling fallible-iterator v0.2.0
+   Compiling quick-error v1.2.3
+   Compiling void v1.0.2
+   Compiling target-lexicon v0.12.1
+   Compiling asn1_der v0.7.4
+   Compiling prometheus v0.11.0
+   Compiling tower-service v0.3.1
+   Compiling httpdate v0.3.2
+   Compiling wasmparser v0.78.2
+   Compiling base64 v0.13.0
+   Compiling more-asserts v0.2.1
+   Compiling crossbeam-epoch v0.9.5
+   Compiling rayon-core v1.9.1
+   Compiling termcolor v1.1.2
+   Compiling wasmtime-cache v0.27.0
+   Compiling wasm-bindgen-shared v0.2.74
+   Compiling cpp_demangle v0.3.3
+   Compiling linked-hash-map v0.5.4
+   Compiling ipnet v2.3.1
+   Compiling bumpalo v3.7.0
+   Compiling pkg-config v0.3.19
+   Compiling cpuid-bool v0.2.0
+   Compiling maybe-uninit v2.0.0
+   Compiling scoped-tls v1.0.0
+   Compiling base64 v0.12.3
+   Compiling match_cfg v0.1.0
+   Compiling wasm-bindgen v0.2.74
+   Compiling nohash-hasher v0.2.0
+   Compiling parity-send-wrapper v0.1.0
+   Compiling hex_fmt v0.3.0
+   Compiling radium v0.5.3
+   Compiling base-x v0.2.8
+   Compiling glob v0.3.0
+   Compiling take_mut v0.2.2
+   Compiling ucd-trie v0.1.3
+   Compiling rawpointer v0.2.1
+   Compiling ip_network v0.3.4
+   Compiling failure_derive v0.1.8
+   Compiling sc-consensus-slots v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling bindgen v0.59.1
+   Compiling winapi v0.3.9
+   Compiling core-foundation-sys v0.7.0
+   Compiling peeking_take_while v0.1.2
+   Compiling shlex v1.0.0
+   Compiling lazycell v1.3.0
+   Compiling percent-encoding v1.0.1
+   Compiling mio-named-pipes v0.1.7
+   Compiling retain_mut v0.1.3
+   Compiling pdqselect v0.1.0
+   Compiling camino v1.0.5
+   Compiling maplit v1.0.2
+   Compiling unicode-width v0.1.8
+   Compiling futures-timer v2.0.2
+   Compiling platforms v1.1.0
+   Compiling same-file v1.0.6
+   Compiling names v0.11.0
+   Compiling vec_map v0.8.2
+   Compiling strsim v0.8.0
+   Compiling ansi_term v0.11.0
+   Compiling quick-error v2.0.1
+   Compiling safe-mix v1.0.1
+   Compiling instant v0.1.10
+   Compiling lock_api v0.4.4
+   Compiling lock_api v0.3.4
+   Compiling tracing-core v0.1.18
+   Compiling sharded-slab v0.1.1
+   Compiling tinyvec v1.3.1
+   Compiling value-bag v1.0.0-alpha.7
+   Compiling ahash v0.7.4
+   Compiling generic-array v0.14.4
+   Compiling proc-macro-error-attr v1.0.4
+   Compiling proc-macro-error v1.0.4
+   Compiling nom v6.1.2
+   Compiling unicase v2.6.0
+   Compiling futures-macro v0.3.16
+   Compiling futures-util v0.3.16
+   Compiling indexmap v1.7.0
+   Compiling num-traits v0.2.14
+   Compiling num-integer v0.1.44
+   Compiling miniz_oxide v0.4.4
+   Compiling num-bigint v0.2.6
+   Compiling num-rational v0.2.4
+   Compiling memoffset v0.6.4
+   Compiling rayon v1.5.1
+   Compiling crossbeam-utils v0.7.2
+   Compiling atomic v0.5.0
+   Compiling memoffset v0.5.6
+   Compiling crossbeam-epoch v0.8.2
+   Compiling num-rational v0.4.0
+   Compiling block-padding v0.1.5
+   Compiling itertools v0.10.1
+   Compiling ed25519 v1.2.0
+   Compiling libloading v0.7.0
+   Compiling trie-root v0.16.0
+   Compiling blake2b_simd v0.5.11
+   Compiling blake2s_simd v0.5.11
+   Compiling itertools v0.9.0
+   Compiling http v0.2.4
+   Compiling tokio-sync v0.1.8
+   Compiling tokio-service v0.1.0
+   Compiling heck v0.3.3
+   Compiling unicode-bidi v0.3.5
+   Compiling concurrent-queue v1.2.2
+   Compiling semver v0.9.0
+   Compiling semver v0.6.0
+   Compiling form_urlencoded v1.0.1
+   Compiling async-mutex v1.4.0
+   Compiling async-lock v2.4.0
+   Compiling owning_ref v0.4.1
+   Compiling wasmi-validation v0.4.0
+   Compiling humantime v1.3.0
+   Compiling dns-parser v0.8.0
+   Compiling lru-cache v0.1.2
+   Compiling linked_hash_set v0.1.4
+   Compiling regex-automata v0.1.10
+   Compiling matrixmultiply v0.3.1
+   Compiling pest v2.1.3
+   Compiling clang-sys v1.2.0
+   Compiling textwrap v0.11.0
+   Compiling walkdir v2.3.2
+   Compiling addr2line v0.16.0
+   Compiling parity-wasm v0.32.0
+   Compiling unicode-normalization v0.1.19
+   Compiling rustc_version v0.2.3
+   Compiling build-helper v0.1.1
+   Compiling http-body v0.3.1
+   Compiling matchers v0.0.1
+   Compiling semver-parser v0.10.2
+   Compiling pest_meta v2.1.3
+   Compiling async-channel v1.6.1
+   Compiling quicksink v0.1.2
+   Compiling aho-corasick v0.7.18
+   Compiling object v0.26.0
+   Compiling futures-lite v1.12.0
+   Compiling bstr v0.2.16
+   Compiling parking_lot_core v0.8.3
+   Compiling num_cpus v1.13.0
+   Compiling getrandom v0.2.3
+   Compiling parking_lot_core v0.7.2
+   Compiling time v0.1.44
+   Compiling iovec v0.1.4
+   Compiling net2 v0.2.37
+   Compiling signal-hook-registry v1.4.0
+   Compiling socket2 v0.4.1
+   Compiling socket2 v0.3.19
+   Compiling atty v0.2.14
+   Compiling mach v0.3.2
+   Compiling dirs-sys-next v0.1.2
+   Compiling errno v0.2.7
+   Compiling hostname v0.3.1
+   Compiling if-addrs v0.6.5
+   Compiling memmap2 v0.2.3
+   Compiling fs2 v0.4.3
+   Compiling rand v0.4.6
+   Compiling dirs-sys v0.3.6
+   Compiling fdlimit v0.2.1
+   Compiling rpassword v5.0.1
+   Compiling jobserver v0.1.22
+   Compiling which v4.2.2
+   Compiling quote v1.0.9
+   Compiling uint v0.9.1
+   Compiling hash256-std-hasher v0.15.2
+   Compiling bitvec v0.20.4
+   Compiling generic-array v0.12.4
+   Compiling blake2-rfc v0.2.18
+   Compiling idna v0.2.3
+   Compiling idna v0.1.5
+   Compiling snow v0.7.2
+   Compiling parking_lot_core v0.6.2
+   Compiling parking_lot v0.9.0
+   Compiling hyper v0.12.36
+   Compiling crossbeam-channel v0.5.1
+   Compiling smallvec v0.6.14
+   Compiling bitvec v0.19.5
+   Compiling security-framework-sys v1.0.0
+   Compiling core-foundation v0.7.0
+   Compiling miow v0.3.7
+   Compiling futures-cpupool v0.1.8
+   Compiling threadpool v1.8.1
+   Compiling substrate-build-script-utils v3.0.0 (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling rand_core v0.6.3
+   Compiling rand_core v0.5.1
+   Compiling parking_lot v0.11.1
+   Compiling parking_lot v0.10.2
+   Compiling bytes v0.4.12
+   Compiling clap v2.33.3
+   Compiling directories-next v2.0.0
+   Compiling regex v1.5.4
+   Compiling resolv-conf v0.7.0
+   Compiling directories v3.0.2
+   Compiling region v2.2.0
+   Compiling cc v1.0.69
+   Compiling prost-build v0.7.0
+   Compiling rand v0.3.23
+   Compiling digest v0.8.1
+   Compiling block-buffer v0.7.3
+   Compiling crypto-mac v0.7.0
+   Compiling digest v0.9.0
+   Compiling block-buffer v0.9.0
+   Compiling crypto-mac v0.8.0
+   Compiling block-cipher v0.8.0
+   Compiling universal-hash v0.4.1
+   Compiling aead v0.3.2
+   Compiling cipher v0.2.5
+   Compiling url v2.2.2
+   Compiling security-framework v1.0.0
+   Compiling url v1.7.2
+   Compiling tokio-executor v0.1.10
+   Compiling crossbeam-queue v0.2.3
+   Compiling rand_chacha v0.3.1
+   Compiling ocw-example v3.0.0-monthly-2021-08 (/Users/zacksleo/projects/github/zacksleo/substrate-ocw/assignment/node)
+   Compiling integer-sqrt v0.1.5
+   Compiling approx v0.5.0
+   Compiling num-complex v0.4.0
+   Compiling rand_chacha v0.2.2
+   Compiling rand_pcg v0.2.1
+   Compiling once_cell v1.8.0
+   Compiling http v0.1.21
+   Compiling string v0.2.1
+   Compiling tokio-buf v0.1.1
+   Compiling Inflector v0.11.4
+   Compiling hmac v0.7.1
+   Compiling pbkdf2 v0.3.0
+   Compiling sha2 v0.8.2
+   Compiling sha-1 v0.8.2
+   Compiling crossbeam-deque v0.8.1
+   Compiling pbkdf2 v0.4.0
+   Compiling stream-cipher v0.7.1
+   Compiling aes-soft v0.5.0
+   Compiling sha2 v0.9.5
+   Compiling hmac v0.8.1
+   Compiling sha3 v0.9.1
+   Compiling blake2 v0.9.1
+   Compiling sha-1 v0.9.7
+   Compiling polyval v0.4.5
+   Compiling poly1305 v0.6.2
+   Compiling salsa20 v0.7.2
+   Compiling tokio-current-thread v0.1.7
+   Compiling tokio-timer v0.2.13
+   Compiling rand v0.8.4
+   Compiling crossbeam-deque v0.7.4
+   Compiling chrono v0.4.19
+   Compiling rand v0.7.3
+   Compiling thread_local v1.1.3
+   Compiling blocking v1.0.2
+   Compiling async-executor v1.4.1
+   Compiling zstd-sys v1.4.20+zstd.1.4.9
+   Compiling backtrace v0.3.61
+   Compiling ring v0.16.20
+   Compiling blake3 v0.3.8
+   Compiling wasmtime-runtime v0.27.0
+   Compiling psm v0.1.14
+   Compiling libz-sys v1.1.3
+   Compiling libloading v0.5.2
+   Compiling simba v0.5.1
+   Compiling hmac-drbg v0.2.0
+   Compiling aes v0.5.0
+   Compiling ghash v0.3.1
+   Compiling http-body v0.1.0
+   Compiling cexpr v0.5.0
+   Compiling hashbrown v0.11.2
+   Compiling fixed-hash v0.7.0
+   Compiling rand_distr v0.4.1
+   Compiling tempfile v3.2.0
+   Compiling twox-hash v1.6.0
+   Compiling cuckoofilter v0.5.0
+   Compiling libsecp256k1 v0.3.5
+   Compiling aes-gcm v0.7.0
+   Compiling lru v0.6.6
+   Compiling synstructure v0.12.5
+   Compiling pest_generator v2.1.3
+   Compiling wasmi v0.9.0
+   Compiling sp-panic-handler v3.0.0 (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling flate2 v1.0.20
+   Compiling fs-swap v0.2.6
+   Compiling ctor v0.1.20
+   Compiling thiserror-impl v1.0.26
+   Compiling zeroize_derive v1.1.0
+   Compiling impl-trait-for-tuples v0.2.1
+   Compiling tracing-attributes v0.1.15
+   Compiling parity-util-mem-derive v0.1.0
+   Compiling sp-debug-derive v3.0.0 (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling ref-cast-impl v1.0.6
+   Compiling dyn-clonable-impl v0.9.0
+   Compiling derive_more v0.99.16
+   Compiling pin-project-internal v1.0.8
+   Compiling prost-derive v0.7.0
+   Compiling enum-as-inner v0.3.3
+   Compiling minicbor-derive v0.6.4
+   Compiling libp2p-swarm-derive v0.23.0
+   Compiling frame-support-procedural-tools-derive v3.0.0 (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling data-encoding-macro-internal v0.1.10
+   Compiling nalgebra-macros v0.1.0
+   Compiling strum_macros v0.20.1
+   Compiling structopt-derive v0.4.15
+   Compiling pest_derive v2.1.0
+   Compiling zeroize v1.4.1
+   Compiling thiserror v1.0.26
+   Compiling dyn-clonable v0.9.0
+   Compiling pin-project v1.0.8
+   Compiling data-encoding-macro v0.1.12
+   Compiling pin-project v0.4.28
+   Compiling failure v0.1.8
+   Compiling prost v0.7.0
+   Compiling curve25519-dalek v3.1.0
+   Compiling merlin v2.0.1
+   Compiling curve25519-dalek v2.1.3
+   Compiling secrecy v0.7.0
+   Compiling chacha20 v0.5.0
+   Compiling tiny-bip39 v0.8.0
+   Compiling minicbor v0.8.1
+   Compiling multibase v0.8.0
+   Compiling tracing v0.1.26
+   Compiling tracing-log v0.1.2
+   Compiling trie-db v0.22.6
+   Compiling mio v0.6.23
+   Compiling polling v2.1.0
+   Compiling kv-log-macro v1.0.7
+   Compiling want v0.3.0
+   Compiling env_logger v0.7.1
+   Compiling pwasm-utils v0.18.1
+   Compiling tokio-io v0.1.13
+   Compiling tokio-threadpool v0.1.18
+   Compiling globset v0.4.8
+   Compiling want v0.2.0
+   Compiling parity-db v0.2.4
+   Compiling wasm-bindgen-backend v0.2.74
+   Compiling wasm-gc-api v0.1.11
+   Compiling librocksdb-sys v6.20.3
+   Compiling strum v0.20.0
+   Compiling structopt v0.3.22
+   Compiling chacha20poly1305 v0.6.0
+   Compiling nalgebra v0.27.1
+   Compiling prost-types v0.7.0
+   Compiling schnorrkel v0.9.1
+   Compiling x25519-dalek v1.1.1
+   Compiling tracing-futures v0.2.5
+   Compiling async-io v1.6.0
+   Compiling file-per-thread-logger v0.1.4
+   Compiling mio-uds v0.6.8
+   Compiling mio-extras v2.0.6
+   Compiling tokio-reactor v0.1.12
+   Compiling tokio-codec v0.1.2
+   Compiling tokio-fs v0.1.7
+   Compiling futures-executor v0.3.16
+   Compiling asynchronous-codec v0.6.0
+   Compiling trust-dns-proto v0.20.3
+   Compiling asynchronous-codec v0.5.0
+   Compiling wasm-bindgen-macro-support v0.2.74
+   Compiling substrate-bip39 v0.4.2
+   Compiling async-process v1.1.0
+   Compiling async-global-executor v2.0.2
+   Compiling if-watch v0.2.2
+   Compiling ed25519-dalek v1.0.1
+   Compiling impl-serde v0.3.1
+   Compiling tracing-serde v0.1.2
+   Compiling cranelift-entity v0.74.0
+   Compiling cranelift-codegen-shared v0.74.0
+   Compiling regalloc v0.0.31
+   Compiling toml v0.5.8
+   Compiling bincode v1.3.3
+   Compiling semver v0.11.0
+   Compiling cargo-platform v0.1.1
+   Compiling tokio v0.2.25
+   Compiling parity-ws v0.10.1
+   Compiling tokio-uds v0.2.7
+   Compiling tokio-tcp v0.1.4
+   Compiling tokio-udp v0.1.6
+   Compiling futures v0.3.16
+   Compiling unsigned-varint v0.7.0
+   Compiling unsigned-varint v0.6.0
+   Compiling async-std v1.9.0
+   Compiling wasm-bindgen-macro v0.2.74
+   Compiling tracing-subscriber v0.2.19
+   Compiling sp-serializer v3.0.0 (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling jsonrpc-core v15.1.0
+   Compiling handlebars v3.5.5
+   Compiling gimli v0.24.0
+   Compiling object v0.24.0
+   Compiling h2 v0.1.26
+   Compiling cranelift-bforest v0.74.0
+   Compiling trust-dns-resolver v0.20.3
+   Compiling petgraph v0.5.1
+   Compiling cranelift-codegen-meta v0.74.0
+   Compiling wasm-timer v0.2.5
+   Compiling rw-stream-sink v0.2.1
+   Compiling sp-utils v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling yamux v0.9.0
+   Compiling soketto v0.4.2
+   Compiling libp2p-pnet v0.20.0
+   Compiling intervalier v0.4.0
+   Compiling exit-future v0.2.0
+   Compiling tokio v0.1.22
+   Compiling proc-macro-crate v1.0.0
+   Compiling proc-macro-crate v0.1.5
+   Compiling multistream-select v0.10.2
+   Compiling cargo_metadata v0.13.1
+   Compiling jsonrpc-pubsub v15.1.0
+   Compiling tokio-util v0.3.1
+   Compiling sct v0.6.1
+   Compiling webpki v0.21.4
+   Compiling addr2line v0.15.2
+   Compiling async-std-resolver v0.20.3
+   Compiling jsonrpc-server-utils v15.1.0
+   Compiling tokio-named-pipes v0.1.0
+   Compiling frame-support-procedural-tools v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling jsonrpc-derive v15.1.0
+   Compiling parity-scale-codec-derive v2.2.0
+   Compiling sp-runtime-interface-proc-macro v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-api-proc-macro v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling multihash-derive v0.7.2
+   Compiling scale-info-derive v0.7.0
+   Compiling sc-chain-spec-derive v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-tracing-proc-macro v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling jsonrpc-client-transports v15.1.0
+   Compiling statrs v0.15.0
+   Compiling h2 v0.2.7
+   Compiling ct-logs v0.7.0
+   Compiling js-sys v0.3.51
+   Compiling rustls v0.19.1
+   Compiling webpki-roots v0.21.1
+   Compiling rustls v0.18.1
+   Compiling parity-tokio-ipc v0.4.0
+   Compiling jsonrpc-ws-server v15.1.0
+   Compiling libp2p-core v0.28.3
+   Compiling libp2p-gossipsub v0.30.1
+   Compiling libp2p-plaintext v0.28.0
+   Compiling libp2p-floodsub v0.29.0
+   Compiling libp2p-identify v0.29.0
+   Compiling libp2p-relay v0.2.0
+   Compiling libp2p-kad v0.30.0
+   Compiling libp2p-noise v0.30.0
+   Compiling sc-network v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling frame-support-procedural v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling multihash v0.13.2
+   Compiling jsonrpc-core-client v15.1.0
+   Compiling jsonrpc-http-server v15.1.0
+   Compiling parity-scale-codec v2.2.0
+   Compiling linregress v0.4.3
+   Compiling jsonrpc-ipc-server v15.1.0
+   Compiling futures-rustls v0.21.1
+   Compiling cranelift-codegen v0.74.0
+   Compiling tokio-rustls v0.14.1
+   Compiling rustls-native-certs v0.4.0
+   Compiling wasm-bindgen-futures v0.4.24
+   Compiling parity-multiaddr v0.11.2
+   Compiling cid v0.6.1
+   Compiling hyper v0.13.10
+   Compiling impl-codec v0.5.1
+   Compiling sp-storage v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-wasm-interface v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-tracing v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-arithmetic v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling fork-tree v3.0.0 (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling scale-info v0.10.0
+   Compiling sp-version-proc-macro v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling primitive-types v0.10.1
+   Compiling sp-externalities v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling finality-grandpa v0.14.3
+   Compiling sp-runtime-interface v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling libp2p-swarm v0.29.0
+   Compiling libp2p-dns v0.28.1
+   Compiling libp2p-websocket v0.29.0
+   Compiling libp2p-uds v0.28.0
+   Compiling libp2p-tcp v0.28.0
+   Compiling libp2p-yamux v0.32.0
+   Compiling libp2p-mplex v0.28.0
+   Compiling libp2p-deflate v0.28.0
+   Compiling libp2p-wasm-ext v0.28.2
+   Compiling memory-db v0.27.0
+   Compiling kvdb v0.10.0
+   Compiling sp-core v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling libp2p-mdns v0.30.2
+   Compiling libp2p-ping v0.29.0
+   Compiling libp2p-request-response v0.11.0
+   Compiling substrate-prometheus-endpoint v0.9.0 (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling hyper-rustls v0.21.0
+   Compiling sp-database v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling kvdb-memorydb v0.10.0
+   Compiling sc-proposer-metrics v0.9.0 (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-trie v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-keystore v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-allocator v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling frame-metadata v14.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-rpc v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling libp2p v0.37.1
+   Compiling sp-state-machine v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-telemetry v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-peerset v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling zstd v0.6.1+zstd.1.4.9
+   Compiling sp-maybe-compressed-blob v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling substrate-wasm-builder v5.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling node-template-runtime v3.0.0-monthly-2021-08 (/Users/zacksleo/projects/github/zacksleo/substrate-ocw/assignment/runtime)
+   Compiling cranelift-frontend v0.74.0
+   Compiling cranelift-native v0.74.0
+   Compiling cranelift-wasm v0.74.0
+   Compiling wasmtime-environ v0.27.0
+   Compiling wasmtime-debug v0.27.0
+   Compiling wasmtime-cranelift v0.27.0
+   Compiling wasmtime-obj v0.27.0
+   Compiling wasmtime-profiling v0.27.0
+   Compiling wasmtime-jit v0.27.0
+   Compiling sp-io v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-executor-common v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling wasmtime v0.27.0
+   Compiling sc-executor-wasmi v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-application-crypto v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-tasks v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-executor-wasmtime v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-runtime v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-keystore v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-version v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-inherents v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-staking v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-consensus-slots v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-consensus-vrf v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-rpc-server v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-keyring v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-api v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-executor v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-finality-grandpa v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-session v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-offchain v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-transaction-pool v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling frame-system-rpc-runtime-api v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-consensus v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling frame-support v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-block-builder v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-timestamp v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-authorship v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-transaction-storage-proof v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-blockchain v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-consensus-babe v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sp-consensus-aura v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-transaction-pool-api v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-client-api v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-consensus v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-block-builder v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-consensus-uncles v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-state-db v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-tracing v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-light v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-transaction-pool v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-basic-authorship v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-consensus-epochs v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-consensus-babe v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-consensus-aura v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling frame-system v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-network-gossip v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-informant v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-offchain v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-finality-grandpa v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling frame-benchmarking v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-transaction-payment v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-authorship v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling frame-executive v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-sudo v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-ocw v3.1.0 (/Users/zacksleo/projects/github/zacksleo/substrate-ocw/assignment/pallets/ocw)
+   Compiling pallet-randomness-collective-flip v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-timestamp v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-template v3.0.0-monthly-2021-08 (/Users/zacksleo/projects/github/zacksleo/substrate-ocw/assignment/pallets/template)
+   Compiling pallet-balances v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-transaction-payment-rpc-runtime-api v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-session v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-transaction-payment-rpc v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-chain-spec v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-rpc-api v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-rpc v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling substrate-frame-rpc-system v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-aura v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling pallet-grandpa v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling rocksdb v0.17.0
+   Compiling kvdb-rocksdb v0.12.1
+   Compiling sc-client-db v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-service v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling sc-cli v0.10.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+   Compiling frame-benchmarking-cli v4.0.0-dev (https://github.com/paritytech/substrate.git?tag=monthly-2021-08#4d28ebeb)
+    Finished release [optimized] target(s) in 11m 02s
+```
+
 ## 运行日志
 
 ```bash
