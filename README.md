@@ -173,3 +173,5 @@ https://github.com/zacksleo/substrate-ocw/blob/master/assignment/pallets/ocw/src
 2021-09-19 19:57:30 🎁 Prepared block for proposing at 10 [hash: 0x306f4b31121d8a01febb93f7f005ee140525dc0df7820fe3fd223c8ad4b7188a; parent_hash: 0x599f…cc16; extrinsics (2): [0x4c92…e9db, 0xb27f…36d5]]
 2021-09-19 19:57:30 🔖 Pre-sealed block for proposal at 10. Hash now 0xf3c2fba34780de6ec515112c63c9041fbd1e380137250202047451cccf02df5d, previously 0x306f4b31121d8a01febb93f7f005ee140525dc0df7820fe3fd223c8ad4b7188a.
 2021-09-19 19:57:30 ✨ Imported #10 (0xf3c2…df5d)
+
+```
